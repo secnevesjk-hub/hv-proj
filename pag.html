@@ -8,36 +8,29 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Pixel e UTM -->
+    <!-- Pixel e UTM - Carregamento Prioritário -->
     <script src="env-config.php"></script>
     <script>
         window.pixelId = window.ENV_PIXEL_ID || "67c65ea78480a2789186da08";
-        console.log("[UTMIFY] Pixel ID:", window.pixelId);
-        
-        (function() {
-            var a = document.createElement("script");
-            a.async = true;
-            a.defer = true;
-            a.src = "https://cdn.utmify.com.br/scripts/pixel/pixel.js";
-            document.head.appendChild(a);
-            
-            var b = document.createElement("script");
-            b.async = true;
-            b.defer = true;
-            b.src = "https://cdn.utmify.com.br/scripts/utms/latest.js";
-            b.setAttribute("data-utmify-prevent-subids", "");
-            document.head.appendChild(b);
-        })();
-
-        // Função global para disparar eventos Utmify com segurança
+        console.log("[UTMIFY] Iniciando carregamento com Pixel ID:", window.pixelId);
+    </script>
+    <script src="https://cdn.utmify.com.br/scripts/pixel/pixel.js"></script>
+    <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-subids></script>
+    
+    <script>
+        // Função de rastreamento com verificação imediata
         window.trackUtmify = function(eventName, data) {
             console.log(`[UTMIFY] Tentando disparar evento: ${eventName}`, data);
-            if (window.utmify && typeof window.utmify.sendEvent === 'function') {
-                window.utmify.sendEvent(eventName, data);
-                console.log(`[UTMIFY] Evento ${eventName} enviado com sucesso!`);
-            } else {
-                console.warn(`[UTMIFY] Script não carregado. Agendando nova tentativa para ${eventName}...`);
-                setTimeout(() => window.trackUtmify(eventName, data), 2000);
+            try {
+                if (window.utmify && typeof window.utmify.sendEvent === 'function') {
+                    window.utmify.sendEvent(eventName, data);
+                    console.log(`[UTMIFY] Evento ${eventName} enviado com sucesso!`);
+                } else {
+                    console.warn(`[UTMIFY] Objeto utmify não encontrado. Tentando novamente em 1s...`);
+                    setTimeout(() => window.trackUtmify(eventName, data), 1000);
+                }
+            } catch (err) {
+                console.error(`[UTMIFY] Erro ao disparar evento ${eventName}:`, err);
             }
         };
     </script>
