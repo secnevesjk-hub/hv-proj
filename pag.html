@@ -8,29 +8,41 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Pixel e UTM - Carregamento Prioritário -->
+    <!-- Pixel e UTM - Utmify Standard Integration -->
     <script src="env-config.php"></script>
     <script>
         window.pixelId = window.ENV_PIXEL_ID || "67c65ea78480a2789186da08";
-        console.log("[UTMIFY] Iniciando carregamento com Pixel ID:", window.pixelId);
-    </script>
-    <script src="https://cdn.utmify.com.br/scripts/pixel/pixel.js"></script>
-    <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-subids></script>
-    
-    <script>
-        // Função de rastreamento com verificação imediata
+        
+        // Utmify Standard Loader
+        (function(w, d, s, l, i) {
+            w[l] = w[l] || [];
+            w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+            var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s),
+                dl = l != 'dataLayer' ? '&l=' + l : '';
+            j.async = true;
+            j.src = 'https://cdn.utmify.com.br/scripts/pixel/pixel.js' + (i ? '?id=' + i : '');
+            f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', window.pixelId);
+
+        // Utmify UTM Tracker
+        (function() {
+            var s = document.createElement('script');
+            s.src = 'https://cdn.utmify.com.br/scripts/utms/latest.js';
+            s.async = true;
+            s.setAttribute('data-utmify-prevent-subids', '');
+            document.head.appendChild(s);
+        })();
+
+        // Função de rastreamento robusta
         window.trackUtmify = function(eventName, data) {
             console.log(`[UTMIFY] Tentando disparar evento: ${eventName}`, data);
-            try {
-                if (window.utmify && typeof window.utmify.sendEvent === 'function') {
-                    window.utmify.sendEvent(eventName, data);
-                    console.log(`[UTMIFY] Evento ${eventName} enviado com sucesso!`);
-                } else {
-                    console.warn(`[UTMIFY] Objeto utmify não encontrado. Tentando novamente em 1s...`);
-                    setTimeout(() => window.trackUtmify(eventName, data), 1000);
-                }
-            } catch (err) {
-                console.error(`[UTMIFY] Erro ao disparar evento ${eventName}:`, err);
+            if (window.utmify && typeof window.utmify.sendEvent === 'function') {
+                window.utmify.sendEvent(eventName, data);
+                console.log(`[UTMIFY] Evento ${eventName} enviado!`);
+            } else {
+                console.warn(`[UTMIFY] Aguardando script para ${eventName}...`);
+                setTimeout(() => window.trackUtmify(eventName, data), 1500);
             }
         };
     </script>
