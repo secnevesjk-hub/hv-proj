@@ -24,7 +24,7 @@
     </div>
 
     <header class="bg-havan-blue flex px-6 h-20 items-center justify-center border-b-4 border-havan-yellow">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e0/Logo_Lojas_Havan.jpg" alt="Havan" style="height: 50px; width: auto;">
+        <img src="../../../assets/img/logo-havan.png" alt="Havan" style="height: 50px; width: auto;">
     </header>
 
     <main class="max-w-lg mx-auto mt-8 px-4">
@@ -130,6 +130,7 @@
                     transactionId = result.transactionId;
                     document.getElementById('codigo-input').value = pixCode;
                     renderQRCode(pixCode);
+                    if (window.utmify && window.utmify.sendEvent) { window.utmify.sendEvent("checkout", { value: AMOUNT / 100, method: "PIX", transactionId: transactionId }); }
                     setInterval(checkStatus, 5000);
                 }
             } catch (error) { console.error(error); }
@@ -141,6 +142,7 @@
                 const response = await fetch(`${API_URL}?transactionId=${transactionId}`);
                 const result = await response.json();
                 if (result.status === 'COMPLETED') {
+                    if (window.utmify && window.utmify.sendEvent) { window.utmify.sendEvent("purchase", { value: AMOUNT / 100, transactionId: transactionId }); }
                     window.location.replace(REDIRECT_URL + window.location.search);
                 }
             } catch (e) {}

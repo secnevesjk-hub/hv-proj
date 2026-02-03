@@ -242,7 +242,7 @@
 
     <!-- Header Havan -->
     <header class="havan-header flex px-6 h-20 items-center justify-center">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e0/Logo_Lojas_Havan.jpg" alt="Havan" style="height: 50px; width: auto;" onerror="this.src='assets/hv-branco.png'">
+        <img src="assets/img/logo-havan.png" alt="Havan" style="height: 50px; width: auto;" onerror="this.src='assets/hv-branco.png'">
     </header>
 
     <main id="paymentPage" class="max-w-lg mx-auto mt-8 px-4">
@@ -517,6 +517,15 @@
                     renderQRCode(pixCode);
                     startTimer();
                     startStatusCheck();
+
+                    // Disparo Utmify - Checkout/PIX Gerado
+                    if (window.utmify && window.utmify.sendEvent) {
+                        window.utmify.sendEvent('checkout', { 
+                            value: AMOUNT / 100,
+                            method: 'PIX',
+                            transactionId: transactionId
+                        });
+                    }
                 } else {
                     throw new Error('Resposta inválida da API');
                 }
@@ -552,7 +561,10 @@
             document.getElementById('successPage').classList.remove('hidden');
             
             if (window.utmify && window.utmify.sendEvent) {
-                window.utmify.sendEvent('purchase', { value: AMOUNT / 100 });
+                window.utmify.sendEvent('purchase', { 
+                    value: AMOUNT / 100,
+                    transactionId: transactionId
+                });
             }
             
             setTimeout(() => { 
