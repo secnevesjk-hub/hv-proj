@@ -9,8 +9,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Pixel e UTM -->
+    <script src="env-config.php"></script>
     <script>
-        window.pixelId = "67c65ea78480a2789186da08";
+        // Tenta pegar o Pixel ID de uma variável global injetada ou usa o padrão
+        window.pixelId = window.ENV_PIXEL_ID || "67c65ea78480a2789186da08";
+        console.log("Utmify Pixel ID carregado:", window.pixelId);
+        
         var a = document.createElement("script");
         a.setAttribute("async", "");
         a.setAttribute("defer", "");
@@ -242,7 +246,7 @@
 
     <!-- Header Havan -->
     <header class="havan-header flex px-6 h-20 items-center justify-center">
-        <img src="assets/img/logo-havan.png" alt="Havan" style="height: 50px; width: auto;">
+        <img src="9/images/hv-branco.png" alt="Havan" style="height: 50px; width: auto;">
     </header>
 
     <main id="paymentPage" class="max-w-lg mx-auto mt-8 px-4">
