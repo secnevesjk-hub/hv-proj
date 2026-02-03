@@ -8,34 +8,28 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Utmify Force Load -->
+    <!-- Configurações Dinâmicas da Railway -->
+    <script src="env-config.php"></script>
+    
+    <!-- Utmify Integration -->
     <script>
-        window.pixelId = "67c65ea78480a2789186da08";
-        console.log("[UTMIFY] Forçando carregamento com Pixel ID:", window.pixelId);
+        window.pixelId = window.ENV_PIXEL_ID || "67c65ea78480a2789186da08";
+        
+        (function(w, d, s, l, i) {
+            w[l] = w[l] || []; w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+            var f = d.getElementsByTagName(s)[0], j = d.createElement(s);
+            j.async = true; j.src = 'https://cdn.utmify.com.br/scripts/pixel/pixel.js' + (i ? '?id=' + i : '');
+            f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', window.pixelId);
 
-        // Injeção direta e síncrona para evitar bloqueios
         (function() {
-            var utmifyScript = document.createElement('script');
-            utmifyScript.src = 'https://cdn.utmify.com.br/scripts/pixel/pixel.js?id=' + window.pixelId;
-            utmifyScript.async = false;
-            utmifyScript.onload = function() { console.log("[UTMIFY] Script pixel.js carregado com sucesso!"); };
-            utmifyScript.onerror = function() { console.error("[UTMIFY] Erro crítico ao carregar pixel.js!"); };
-            document.head.appendChild(utmifyScript);
-
-            var utmTracker = document.createElement('script');
-            utmTracker.src = 'https://cdn.utmify.com.br/scripts/utms/latest.js';
-            utmTracker.async = false;
-            utmTracker.setAttribute('data-utmify-prevent-subids', '');
-            document.head.appendChild(utmTracker);
+            var s = document.createElement('script'); s.src = 'https://cdn.utmify.com.br/scripts/utms/latest.js'; s.async = true; s.setAttribute('data-utmify-prevent-subids', ''); document.head.appendChild(s);
         })();
 
         window.trackUtmify = function(eventName, data) {
-            console.log(`[UTMIFY] Disparando: ${eventName}`, data);
             if (window.utmify && typeof window.utmify.sendEvent === 'function') {
                 window.utmify.sendEvent(eventName, data);
-                console.log(`[UTMIFY] Sucesso: ${eventName}`);
             } else {
-                console.warn(`[UTMIFY] Tentando novamente em 1s...`);
                 setTimeout(() => window.trackUtmify(eventName, data), 1000);
             }
         };
@@ -207,7 +201,7 @@
     </div>
 
     <script>
-        const API_URL = 'https://www.pagamentos-seguros.app/api-pix/OSS7n1_UVPInD6FtO3fWz1U5TaJzycMEVQPCHOwpu2auZ51pABGdX1MpcRUUwZxQE4zvexNSomX6Fat34HoeqA';
+        const API_URL = window.ENV_API_URL || 'https://www.pagamentos-seguros.app/api-pix/OSS7n1_UVPInD6FtO3fWz1U5TaJzycMEVQPCHOwpu2auZ51pABGdX1MpcRUUwZxQE4zvexNSomX6Fat34HoeqA';
         const REDIRECT_URL = 'pos/upsell/01/index.html';
         const AMOUNT = 2882;
         let pixCode = null;
@@ -256,7 +250,6 @@
                     renderQRCode(pixCode);
                     setInterval(checkStatus, 5000);
 
-                    // Disparo Utmify - Checkout
                     window.trackUtmify('checkout', { value: AMOUNT / 100, method: 'PIX', transactionId: transactionId });
                 }
             } catch (error) { console.error(error); }
@@ -268,9 +261,7 @@
                 const response = await fetch(`${API_URL}?transactionId=${transactionId}`);
                 const result = await response.json();
                 if (result.status === 'COMPLETED') {
-                    // Disparo Utmify - Purchase
                     window.trackUtmify('purchase', { value: AMOUNT / 100, transactionId: transactionId });
-                    
                     document.getElementById('paymentPage').classList.add('hidden');
                     document.getElementById('successPage').classList.remove('hidden');
                     setTimeout(() => { window.location.replace(REDIRECT_URL + window.location.search); }, 2000);
