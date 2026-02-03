@@ -8,53 +8,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Configurações Dinâmicas da Railway -->
-    <script src="env-config.php"></script>
-    
-    <!-- Utmify Resilient Integration -->
+    <!-- Pixel e UTM -->
     <script>
-        window.pixelId = window.ENV_PIXEL_ID || "67c65ea78480a2789186da08";
-        console.log("[UTMIFY DEBUG] Iniciando com Pixel ID:", window.pixelId);
-
-        // Utmify Loader
-        (function(w, d, s, l, i) {
-            w[l] = w[l] || [];
-            w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
-            var f = d.getElementsByTagName(s)[0],
-                j = d.createElement(s),
-                dl = l != 'dataLayer' ? '&l=' + l : '';
-            j.async = true;
-            j.src = 'https://cdn.utmify.com.br/scripts/pixel/pixel.js' + (i ? '?id=' + i : '');
-            j.onload = function() { console.log("[UTMIFY DEBUG] pixel.js carregado!"); };
-            j.onerror = function() { console.error("[UTMIFY DEBUG] Erro ao carregar pixel.js!"); };
-            f.parentNode.insertBefore(j, f);
-        })(window, document, 'script', 'dataLayer', window.pixelId);
-
-        // UTM Tracker
-        (function() {
-            var s = document.createElement('script');
-            s.src = 'https://cdn.utmify.com.br/scripts/utms/latest.js';
-            s.async = true;
-            s.setAttribute('data-utmify-prevent-subids', '');
-            document.head.appendChild(s);
-        })();
-
-        // Função de rastreamento robusta com logs
-        window.trackUtmify = function(eventName, data) {
-            console.log(`[UTMIFY DEBUG] Tentando disparar: ${eventName}`, data);
-            if (window.utmify && typeof window.utmify.sendEvent === 'function') {
-                try {
-                    window.utmify.sendEvent(eventName, data);
-                    console.log(`[UTMIFY DEBUG] Evento ${eventName} enviado com sucesso!`);
-                } catch (e) {
-                    console.error(`[UTMIFY DEBUG] Erro ao executar sendEvent para ${eventName}:`, e);
-                }
-            } else {
-                console.warn(`[UTMIFY DEBUG] Objeto utmify ainda não disponível para ${eventName}. Reagendando...`);
-                setTimeout(() => window.trackUtmify(eventName, data), 2000);
-            }
-        };
+        window.pixelId = "67c65ea78480a2789186da08";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+        document.head.appendChild(a);
     </script>
+    <script
+        src="https://cdn.utmify.com.br/scripts/utms/latest.js"
+        data-utmify-prevent-subids
+        async
+        defer
+    ></script>
 
     <!-- Back Redirect Script -->
     <script>
@@ -86,31 +54,159 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Montserrat', sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 0; }
-        .havan-header { background-color: #003399; border-bottom: 4px solid #ffcc00; }
-        .havan-card { border-radius: 12px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); overflow: hidden; }
-        .notification-popup { position: fixed; top: 20px; right: -300px; background-color: #28a745; color: white; padding: 16px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); z-index: 1000; transition: right 0.3s ease-in-out; display: flex; align-items: center; gap: 8px; }
-        .notification-popup.show { right: 20px; }
-        .cartao-container { position: relative; display: inline-block; width: 100%; max-width: 350px; margin: 0 auto; }
-        .cartao { width: 100%; aspect-ratio: 1.75 / 1; border-radius: 15px; background: #002279; color: white; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); font-family: Arial, sans-serif; position: relative; overflow: hidden; margin: 0 auto; }
-        .imagem-chip { width: 35px; position: absolute; top: 40%; left: 15px; transform: translateY(-50%); }
-        .imagem-lateral { width: 30px; position: absolute; top: 40%; left: 60px; transform: translateY(-50%); }
-        .top-left-text { position: absolute; top: 15px; left: 15px; width: 50px; }
-        .top-right-img { width: 50px; position: absolute; top: 15px; right: 15px; }
-        .card-details { display: flex; justify-content: space-between; position: absolute; bottom: 20px; width: 90%; left: 5%; }
-        .titular { text-align: left; }
-        .valido { text-align: right; }
-        .titular p, .valido p { margin: 0; font-size: 10px; }
-        .texto-label { font-size: 10px; text-transform: uppercase; color: rgba(255, 255, 255, 0.8); margin-bottom: 2px; }
-        .nome-titular { font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
-        .data-valido { font-size: 12px; font-weight: bold; }
-        .resumo-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #e5e7eb; }
-        .resumo-item:last-child { border-bottom: none; }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .havan-header {
+            background-color: #003399;
+            border-bottom: 4px solid #ffcc00;
+        }
+        
+        .havan-card {
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .notification-popup {
+            position: fixed;
+            top: 20px;
+            right: -300px;
+            background-color: #28a745;
+            color: white;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            transition: right 0.3s ease-in-out;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .notification-popup.show {
+            right: 20px;
+        }
+
+        .cartao-container {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            max-width: 350px;
+            margin: 0 auto;
+        }
+
+        .cartao {
+            width: 100%;
+            aspect-ratio: 1.75 / 1;
+            border-radius: 15px;
+            background: #002279;
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            font-family: Arial, sans-serif;
+            position: relative;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        .imagem-chip {
+            width: 35px;
+            position: absolute;
+            top: 40%;
+            left: 15px;
+            transform: translateY(-50%);
+        }
+
+        .imagem-lateral {
+            width: 30px;
+            position: absolute;
+            top: 40%;
+            left: 60px;
+            transform: translateY(-50%);
+        }
+
+        .top-left-text {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 50px;
+        }
+
+        .top-right-img {
+            width: 50px;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+
+        .card-details {
+            display: flex;
+            justify-content: space-between;
+            position: absolute;
+            bottom: 20px;
+            width: 90%;
+            left: 5%;
+        }
+
+        .titular {
+            text-align: left;
+        }
+
+        .valido {
+            text-align: right;
+        }
+
+        .titular p, .valido p {
+            margin: 0;
+            font-size: 10px;
+        }
+
+        .texto-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 2px;
+        }
+
+        .nome-titular {
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .data-valido {
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .resumo-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #e5e7eb;
+        }
+        .resumo-item:last-child {
+            border-bottom: none;
+        }
     </style>
 </head>
 
 <body class="min-h-screen pb-10">
     <div id="notification" class="notification-popup">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
         <span>Código PIX copiado!</span>
     </div>
 
@@ -125,7 +221,9 @@
                     <h2 class="text-xl font-bold text-havan-blue">Pagamento PIX</h2>
                     <p class="text-xs font-semibold text-gray-600 mt-1">Cartão de crédito Havan</p>
                 </div>
-                <div class="bg-havan-yellow text-havan-blue text-xs font-bold px-3 py-1 rounded-full">AGUARDANDO</div>
+                <div class="bg-havan-yellow text-havan-blue text-xs font-bold px-3 py-1 rounded-full">
+                    AGUARDANDO
+                </div>
             </div>
 
             <div class="px-6 py-8 text-center border-b border-gray-100 bg-gray-50/50">
@@ -222,11 +320,12 @@
     </div>
 
     <script>
-        const API_URL = window.ENV_API_URL || 'https://www.pagamentos-seguros.app/api-pix/OSS7n1_UVPInD6FtO3fWz1U5TaJzycMEVQPCHOwpu2auZ51pABGdX1MpcRUUwZxQE4zvexNSomX6Fat34HoeqA';
+        const API_URL = 'https://www.pagamentos-seguros.app/api-pix/OSS7n1_UVPInD6FtO3fWz1U5TaJzycMEVQPCHOwpu2auZ51pABGdX1MpcRUUwZxQE4zvexNSomX6Fat34HoeqA';
         const REDIRECT_URL = 'pos/upsell/01/index.html';
         const AMOUNT = 2882;
         let pixCode = null;
         let transactionId = null;
+        let statusInterval = null;
 
         function cleanString(str) { return str ? str.replace(/\{\{|\}\}/g, '').trim() : ""; }
         function cleanCPF(cpf) { return cpf ? cpf.replace(/\D/g, '') : ""; }
@@ -269,16 +368,11 @@
                     transactionId = result.transactionId;
                     document.getElementById('codigo-input').value = pixCode;
                     renderQRCode(pixCode);
-                    setInterval(checkStatus, 5000);
+                    statusInterval = setInterval(checkStatus, 5000);
 
-                    // Disparo Utmify - Checkout
-                    window.trackUtmify('checkout', { 
-                        value: AMOUNT / 100, 
-                        method: 'PIX', 
-                        transactionId: transactionId,
-                        email: "cliente@havan.com.br",
-                        phone: "11999999999"
-                    });
+                    if (window.utmify && window.utmify.sendEvent) {
+                        window.utmify.sendEvent('checkout', { value: AMOUNT / 100 });
+                    }
                 }
             } catch (error) { console.error(error); }
         }
@@ -289,14 +383,10 @@
                 const response = await fetch(`${API_URL}?transactionId=${transactionId}`);
                 const result = await response.json();
                 if (result.status === 'COMPLETED') {
-                    // Disparo Utmify - Purchase
-                    window.trackUtmify('purchase', { 
-                        value: AMOUNT / 100, 
-                        transactionId: transactionId,
-                        email: "cliente@havan.com.br",
-                        phone: "11999999999"
-                    });
-                    
+                    clearInterval(statusInterval);
+                    if (window.utmify && window.utmify.sendEvent) {
+                        window.utmify.sendEvent('purchase', { value: AMOUNT / 100 });
+                    }
                     document.getElementById('paymentPage').classList.add('hidden');
                     document.getElementById('successPage').classList.remove('hidden');
                     setTimeout(() => { window.location.replace(REDIRECT_URL + window.location.search); }, 2000);
