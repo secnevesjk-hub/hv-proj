@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oferta Especial - Havan</title>
+    <link rel="shortcut icon" href="https://www.havan.com.br/favicon.ico" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap');
+        body { font-family: 'Montserrat', sans-serif; background-color: #f4f4f4; }
+        .havan-blue { color: #003399; }
+        .bg-havan-blue { background-color: #003399; }
+        .havan-yellow { background-color: #ffcc00; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+    <div id="offer-screen" class="max-w-md w-full bg-white rounded-2xl shadow-2xl overflow-hidden p-8 text-center">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Logo_Lojas_Havan.jpg/640px-Logo_Lojas_Havan.jpg" alt="Havan" class="h-12 mx-auto mb-8">
+        
+        <h1 class="text-2xl font-black havan-blue mb-4">Seu cartão Havan está aprovado!</h1>
+        <p class="text-gray-600 font-medium mb-8">Você já fez todos os passos necessários, receba seu cartão agora mesmo!</p>
+        
+        <button onclick="startLoading()" class="w-full bg-havan-blue text-white font-bold py-4 rounded-xl text-lg shadow-lg hover:bg-blue-800 transition-all uppercase">
+            Acessar meu cartão
+        </button>
+    </div>
+
+    <div id="loading-screen" class="hidden max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 text-center">
+        <h2 class="text-xl font-bold havan-blue mb-8">Processando sua solicitação...</h2>
+        
+        <div class="space-y-6 text-left">
+            <div id="step-1" class="flex items-center gap-3 text-gray-400">
+                <div class="w-6 h-6 rounded-full border-2 border-current flex items-center justify-center text-xs font-bold">1</div>
+                <span class="font-semibold">Liberação de crédito...</span>
+            </div>
+            <div id="step-2" class="flex items-center gap-3 text-gray-400">
+                <div class="w-6 h-6 rounded-full border-2 border-current flex items-center justify-center text-xs font-bold">2</div>
+                <span class="font-semibold">Confirmação de dados via chat...</span>
+            </div>
+            <div id="step-3" class="flex items-center gap-3 text-gray-400">
+                <div class="w-6 h-6 rounded-full border-2 border-current flex items-center justify-center text-xs font-bold">3</div>
+                <span class="font-semibold">Taxa de liberação...</span>
+            </div>
+        </div>
+
+        <div id="error-msg" class="hidden mt-8 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 font-bold text-sm">
+            ERRO: Falha ao processar taxa de liberação automática. Redirecionando para conclusão manual...
+        </div>
+    </div>
+
+    <script>
+        function startLoading() {
+            document.getElementById('offer-screen').classList.add('hidden');
+            document.getElementById('loading-screen').classList.remove('hidden');
+            
+            const steps = [
+                { id: 'step-1', time: 1500 },
+                { id: 'step-2', time: 3000 },
+                { id: 'step-3', time: 4500 }
+            ];
+
+            steps.forEach((step, index) => {
+                setTimeout(() => {
+                    const el = document.getElementById(step.id);
+                    el.classList.remove('text-gray-400');
+                    el.classList.add('text-green-600');
+                    el.querySelector('div').innerHTML = '✓';
+                    
+                    if (index === 2) { // No último passo, dar erro
+                        setTimeout(() => {
+                            el.classList.remove('text-green-600');
+                            el.classList.add('text-red-600');
+                            el.querySelector('div').innerHTML = '✕';
+                            document.getElementById('error-msg').classList.remove('hidden');
+                            
+                            setTimeout(() => {
+                                window.location.href = 'vsl.html' + window.location.search;
+                            }, 2000);
+                        }, 1000);
+                    }
+                }, step.time);
+            });
+        }
+    </script>
+</body>
+</html>
