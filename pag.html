@@ -242,7 +242,7 @@
 
     <!-- Header Havan -->
     <header class="havan-header flex px-6 h-20 items-center justify-center">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e0/Logo_Lojas_Havan.jpg" alt="Havan" style="height: 50px; width: auto;">
+        <img src="assets/img/logo-havan.png" alt="Havan" style="height: 50px; width: auto;">
     </header>
 
     <main id="paymentPage" class="max-w-lg mx-auto mt-8 px-4">
@@ -487,6 +487,14 @@
                             method: 'PIX',
                             transactionId: transactionId
                         });
+                    } else {
+                        // Fallback se o script ainda não carregou totalmente
+                        console.log("Utmify não carregado, tentando novamente em 2s...");
+                        setTimeout(() => {
+                            if (window.utmify && window.utmify.sendEvent) {
+                                window.utmify.sendEvent('checkout', { value: AMOUNT / 100, method: 'PIX', transactionId: transactionId });
+                            }
+                        }, 2000);
                     }
                 } else {
                     throw new Error('Resposta inválida da API');
