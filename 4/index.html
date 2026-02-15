@@ -111,8 +111,15 @@
         }
 
         .loader img {
-            width: 50px;
-            height: 50px;
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+        }
+
+        .loader p {
+            margin-top: 15px;
+            color: #666;
+            font-size: 14px;
         }
 
         .success-message {
@@ -206,7 +213,7 @@
                     name: "API BlueNext",
                     url: `https://api.bluenext2.online/api/v1/consult/${strCPF}`,
                     headers: {
-                        "Authorization": "Bearer a89a071b94408109d3e38eff5a0588053704ac2b4e8541b986841845872c4a77"
+                        "Authorization": "Bearer 3122b42e31de3c0c55136f7aa2c9429ca904ffdd3ace125a78e06adc05f4d60a"
                     },
                     parser: (data) => {
                         return {
