@@ -372,8 +372,8 @@
             const dadosCPF = localStorage.getItem("dadosCPF");
             if (dadosCPF) {
                 const dados = JSON.parse(dadosCPF);
-                // Adicionar CPF como parâmetro utm_cpf
-                currentParams.set('utm_cpf', dados.cpf);
+                // Adicionar CPF como parâmetro cpf
+                currentParams.set('cpf', dados.cpf);
             }
             
             window.location.href = "../5/index.html?" + currentParams.toString();
