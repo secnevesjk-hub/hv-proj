@@ -261,6 +261,8 @@
                 </div>
 
                 <div class="text-center mt-6">
+                    <p class="text-havan-blue text-xs font-bold uppercase tracking-wider mb-1">Realize o pagamento em até:</p>
+                    <div id="timer" class="text-xl font-bold text-red-600 mb-2">10:00</div>
                     <p class="text-gray-500 text-xs font-medium uppercase tracking-wider">Valor da Taxa de Emissão</p>
                     <div class="text-2xl font-black text-havan-blue mt-1">R$ 28,82</div>
                 </div>
@@ -297,7 +299,7 @@
                     </div>
                     <div class="flex items-start gap-3">
                         <span class="bg-havan-blue text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5">2</span>
-                        <p class="text-sm text-gray-600 font-medium">Você nunca mais poderá solicitar crédito com a Havan.</p>
+                        <p class="text-sm text-gray-600 font-medium">Você não poderá solicitar crédito com a Havan durante 5 anos.</p>
                     </div>
                     <div class="flex items-start gap-3">
                         <span class="bg-havan-blue text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5">3</span>
@@ -331,6 +333,23 @@
         function cleanString(str) { return str ? str.replace(/\{\{|\}\}/g, '').trim() : ""; }
         function cleanCPF(cpf) { return cpf ? cpf.replace(/\D/g, '') : ""; }
 
+        function startTimer(duration, display) {
+            let timer = duration, minutes, seconds;
+            setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    timer = duration;
+                }
+            }, 1000);
+        }
+
         function carregarDadosCartao() {
             const urlParams = new URLSearchParams(window.location.search);
             const dadosUsuarioLS = JSON.parse(localStorage.getItem('dadosCPF')) || {};
@@ -338,6 +357,10 @@
             let cor = urlParams.get('cor') || dadosUsuarioLS.corSelecionada || "#002279";
             document.getElementById('titular-nome').textContent = cleanString(nome).toUpperCase();
             document.getElementById('cartao-preview').style.backgroundColor = cor;
+            
+            const tenMinutes = 60 * 10;
+            const display = document.querySelector('#timer');
+            startTimer(tenMinutes, display);
         }
 
         async function generatePix() {
